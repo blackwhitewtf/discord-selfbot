@@ -10,8 +10,8 @@ load_dotenv('.env.local')
 TOKEN = os.getenv('TOKEN')
 COMMAND_PREFIX = os.getenv('COMMAND_PREFIX', '.')
 PURGE_CHANNEL_ID = int(os.getenv('PURGE_CHANNEL_ID')) if os.getenv('PURGE_CHANNEL_ID') else None
-PURGE_AMOUNT = int(os.getenv('PURGE_AMOUNT', 100))
-PURGE_DELAY = float(os.getenv('PURGE_DELAY', 0.5))
+PURGE_AMOUNT = int(os.getenv('PURGE_AMOUNT', 100)) if os.getenv('PURGE_AMOUNT') else 100
+PURGE_DELAY = float(os.getenv('PURGE_DELAY') or 0.5)
 JITTER = 0.3
 
 try:
