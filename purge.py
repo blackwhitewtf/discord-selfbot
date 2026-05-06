@@ -33,13 +33,20 @@ async def purge_start(ctx):
         return
     
     try:
-        channel = await bot.fetch_channel(PURGE_CHANNEL_ID)
-        messages = await channel.history(limit=PURGE_AMOUNT).flatten()
+        # Versuche zuerst als Channel, dann als User (für DMs)
+        try:
+            channel = await bot.fetch_channel(PURGE_CHANNEL_ID)
+        except:
+            user = await bot.fetch_user(PURGE_CHANNEL_ID)
+            channel = user.dm_channel or await user.create_dm()
+        
+        messages = [msg async for msg in channel.history(limit=PURGE_AMOUNT)]
         own_messages = [msg for msg in messages if msg.author == bot.user]
         
         for message in own_messages:
             await message.delete()
             await asyncio.sleep(PURGE_DELAY + random.uniform(0, JITTER))
+        print(f"✅ {len(own_messages)} Nachrichten gelöscht")
     except Exception as e:
         print(f"❌ {e}")
 
@@ -51,12 +58,19 @@ async def purge_all_start(ctx):
         return
     
     try:
-        channel = await bot.fetch_channel(PURGE_CHANNEL_ID)
+        # Versuche zuerst als Channel, dann als User (für DMs)
+        try:
+            channel = await bot.fetch_channel(PURGE_CHANNEL_ID)
+        except:
+            user = await bot.fetch_user(PURGE_CHANNEL_ID)
+            channel = user.dm_channel or await user.create_dm()
+        
         deleted = 0
         async for message in channel.history(limit=PURGE_AMOUNT):
             await message.delete()
             deleted += 1
             await asyncio.sleep(PURGE_DELAY + random.uniform(0, JITTER))
+        print(f"✅ {deleted} Nachrichten gelöscht")
     except Exception as e:
         print(f"❌ {e}")
 
